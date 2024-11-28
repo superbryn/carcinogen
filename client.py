@@ -11,9 +11,9 @@ nickname = input("ENTER THE NICKNAME : ")
 def recieve():
     while True:
         try:
-            message = client.recv(1024).decode('ascii')
-            if message == "NICK":
-                client.send(nickname.encode('ascii'))
+            message = client.recv(1024).decode('utf-8')
+            if message == "balls":
+                client.send(nickname.encode('utf-8'))
             else:
                 print(message)
         except:
@@ -24,7 +24,7 @@ def recieve():
 def write():
     while True:
         message = f"{nickname} : {input("")}"
-        client.send(message.encode('ascii'))
+        client.send(message.encode('utf-8'))
 
 recieve_thread = threading.Thread(target=recieve)
 recieve_thread.start()

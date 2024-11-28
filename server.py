@@ -1,13 +1,9 @@
 import socket
 import threading
+import os
 
-hostname = socket.gethostname()
-localip= socket.gethostbyname(hostname)
-
-print(f"HOSTING IP ADDRESS : {localip}")
-
-host =  localip #local_host
-port = 55555
+host =  "0.0.0.0"
+port = int(os.environ.get("PORT", 55555))
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((host,port))
@@ -16,9 +12,14 @@ server.listen()
 clients = []
 nicknames = []
 
-def broadcast(message):
+def broadcast(message, sender_client = None):
     for client in clients:
-        client.send(message)
+        if client != sender_client:
+            try:
+                client.send(message)
+            except:
+                client.close()
+                remove_client(client)
 
 def handle(client):
     while True:
@@ -26,27 +27,31 @@ def handle(client):
             message = client.recv(1024)
             broadcast(message)
         except:
-            index = client.index(client)
-            clients.remove(client)
-            client.close()
-            nickname = nicknames[index]
-            broadcast(f"{nickname} left the chat".encode('ascii'))
-            nicknames.remove(nickname)
+            remove_client(client)
             break
+
+def remove_client(client):
+    if client in clients:
+        index = client.index(client)
+        clients.remove(client)
+        nickname = nicknames[index]
+        broadcast(f"{nickname} left the chat".encode('utf-8'))
+        nicknames.remove(nickname)
+        client.close()
 
 def recieve():
     while True:
         client, address = server.accept()
-        print(f"Connect with {str(address)}")
+        print(f"Connected with {str(address)}")
 
-        client.send('NICK'.encode('ascii'))
-        nickname = client.recv(1024).decode('ascii')
+        client.send('balls'.encode('utf-8'))
+        nickname = client.recv(1024).decode('utf-8')
         nicknames.append(nickname)
         clients.append(client)
 
         print(f"Nickname of the client is {nickname} ")
-        broadcast(f"{nickname} joined the chat".encode('ascii'))
-        client.send('connected to the server'.encode('ascii'))
+        broadcast(f"{nickname} joined the chat".encode('utf-8'))
+        client.send('connected to the server'.encode('utf-8'))
 
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
