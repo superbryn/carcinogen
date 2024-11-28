@@ -1,7 +1,7 @@
 import socket
 import threading
 
-ipaddrs = str(input("Enter the ipaddrs :"))
+ipaddrs = 'https://carcinogen.onrender.com'
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((ipaddrs, 55555))

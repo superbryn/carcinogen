@@ -3,7 +3,7 @@ import threading
 import os
 
 host =  "0.0.0.0"
-port = int(os.environ.get("PORT", 55555))
+port = int(os.environ.get("PORT", 8080))
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((host,port))
@@ -32,7 +32,7 @@ def handle(client):
 
 def remove_client(client):
     if client in clients:
-        index = client.index(client)
+        index = clients.index(client)
         clients.remove(client)
         nickname = nicknames[index]
         broadcast(f"{nickname} left the chat".encode('utf-8'))
